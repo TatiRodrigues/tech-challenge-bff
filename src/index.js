@@ -28,13 +28,18 @@ app.use((req, res, next) => {
 })
 app.use(routes)
 
-const serverPromise = connectDB().then(() => {
-    if (process.env.NODE_ENV !== 'test') {
-        const PORT = process.env.PORT || process.env.port || 3000;
-        app.listen(PORT, () => {
-            console.log(`Servidor rodando na porta ${PORT}`);
-        });
-    }
+const PORT = process.env.PORT || process.env.port || 3000;
+
+// Servidor sobe imediatamente — Railway healthcheck passa
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        console.log(`Servidor rodando na porta ${PORT}`);
+    });
+}
+
+// MongoDB conecta em background — não bloqueia o servidor
+const serverPromise = connectDB().catch(err => {
+    console.error('Falha ao conectar ao MongoDB:', err.message);
 });
 
 

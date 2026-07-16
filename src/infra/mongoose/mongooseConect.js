@@ -10,8 +10,8 @@ async function connectDB() {
 
   try {
     await mongoose.connect(mongoUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
+      serverSelectionTimeoutMS: 10000,
+      connectTimeoutMS: 10000,
     });
     console.log('Conectado ao MongoDB');
   } catch (error) {
