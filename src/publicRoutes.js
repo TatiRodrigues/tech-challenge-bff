@@ -90,4 +90,6 @@ router.post('/user', userController.create.bind(userController))
  */
 router.post('/user/auth', userController.auth.bind(userController))
 
+router.get('/health', (req, res) => res.status(200).json({ status: 'ok' }))
+
 module.exports = router
