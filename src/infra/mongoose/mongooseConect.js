@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 
+// Falha rápida: sem isso, queries ficam em buffer esperando conexão que nunca vem
+mongoose.set('bufferCommands', false);
+
 async function connectDB() {
   const mongoUri = process.env.MONGO_URI || process.env.MONGO_URL || process.env.DATABASE_URL;
 

@@ -73,16 +73,20 @@ class UserController {
   async auth(req, res) {
     const { userRepository, getUser } = this.di
     const { email, password } = req.body
-    const user = await getUser({ repository: userRepository, userFilter: { email, password } })
-    
-    if (!user?.[0]) return res.status(401).json({ message: 'Usuário não encontrado' })
-    const userToTokenize = {...user[0], id: user[0].id.toString()}
-    res.status(200).json({
-      message: 'Usuário autenticado com sucesso',
-      result: {
-        token: jwt.sign(userToTokenize, JWT_SECRET, { expiresIn: '12h' })
-      }
-    })
+    try {
+      const user = await getUser({ repository: userRepository, userFilter: { email, password } })
+      if (!user?.[0]) return res.status(401).json({ message: 'Usuário não encontrado' })
+      const userToTokenize = {...user[0], id: user[0].id.toString()}
+      res.status(200).json({
+        message: 'Usuário autenticado com sucesso',
+        result: {
+          token: jwt.sign(userToTokenize, JWT_SECRET, { expiresIn: '12h' })
+        }
+      })
+    } catch (error) {
+      console.error('[auth] Erro:', error.message)
+      res.status(503).json({ message: 'Serviço temporariamente indisponível. Tente novamente.' })
+    }
   }
   static getToken(token) {
     try {
